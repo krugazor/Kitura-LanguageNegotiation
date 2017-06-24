@@ -1,0 +1,6 @@
+.DS_Store
+/.build
+/Packages
+/*.xcodeproj
+# Ignoring pin files as per https://github.com/apple/swift-package-manager/blob/master/Documentation/Usage.md#package-pinning
+/Package.pins
