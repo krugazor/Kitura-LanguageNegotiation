@@ -83,7 +83,7 @@ public class LanguageNegotiation: RouterMiddleware {
     let methods: Methods
     let options: Options
     let langs: [String]
-        lazy var subdomainPattern: NSRegularExpression = self.computeSubdomainPattern()
+    lazy var subdomainPattern: NSRegularExpression = self.computeSubdomainPattern()
     lazy var acceptLanguagePattern: NSRegularExpression = self.computeAcceptLanguagePattern()
     public lazy var routerPaths: String = self.computeRouterPaths()
 
