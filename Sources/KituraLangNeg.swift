@@ -39,12 +39,12 @@ public class LanguageNegotiation: RouterMiddleware {
         }
 
         // Attempt negotiation with the first subdomain (eg, en.example.com)
-        static let subdomain = Methods(rawValue: 1 << 0)
+        public static let subdomain = Methods(rawValue: 1 << 0)
         // Attempt negotiation with the first path segment (eg,
         // example.com/en/hello)
-        static let pathPrefix = Methods(rawValue: 1 << 1)
+        public static let pathPrefix = Methods(rawValue: 1 << 1)
         // Attempt negoitation with the Accept-Language response header
-        static let header = Methods(rawValue: 1 << 2)
+        public static let header = Methods(rawValue: 1 << 2)
     }
 
     public struct Options: OptionSet {
@@ -54,18 +54,18 @@ public class LanguageNegotiation: RouterMiddleware {
         }
 
         // Don't send Content-Language header
-        static let noContentLanguage = Options(rawValue: 1 << 0)
+        public static let noContentLanguage = Options(rawValue: 1 << 0)
         // Don't send Vary header if Methods.header is active and we didn't
         // match on another method
-        static let noVary = Options(rawValue: 1 << 1)
+        public static let noVary = Options(rawValue: 1 << 1)
         // Do a 307 redirect to the same path with a subdomain or path prefix
         // corresponding to the matched langcode iff we matched on the
         // Accept-Language header but no other method. Note that if this
         // redirection happens, no Content-Language header is sent.
-        static let redirectOnHeaderMatch = Options(rawValue: 1 << 2)
+        public static let redirectOnHeaderMatch = Options(rawValue: 1 << 2)
         // Send a 406 status code if we can't satisfy an Accept-Language request
         // (default behavior is to just select the first langcode
-        static let notAcceptableOnHeaderMatchFail = Options(rawValue: 1 << 3)
+        public static let notAcceptableOnHeaderMatchFail = Options(rawValue: 1 << 3)
     }
 
     enum NegMethodError: Error {
@@ -83,9 +83,9 @@ public class LanguageNegotiation: RouterMiddleware {
     let methods: Methods
     let options: Options
     let langs: [String]
-    lazy var subdomainPattern: NSRegularExpression = self.computeSubdomainPattern()
+        lazy var subdomainPattern: NSRegularExpression = self.computeSubdomainPattern()
     lazy var acceptLanguagePattern: NSRegularExpression = self.computeAcceptLanguagePattern()
-    lazy var routerPaths: String = self.computeRouterPaths()
+    public lazy var routerPaths: String = self.computeRouterPaths()
 
     public init(_ langs: [String], methods: Methods, options: Options = []) throws {
         guard langs.count > 0 else {
