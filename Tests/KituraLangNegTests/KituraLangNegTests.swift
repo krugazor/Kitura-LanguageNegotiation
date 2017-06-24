@@ -2,6 +2,7 @@ import XCTest
 import Foundation
 import Kitura
 import KituraNet
+import Dispatch
 @testable import KituraLangNeg
 
 class KituraLangNegTests: XCTestCase {
