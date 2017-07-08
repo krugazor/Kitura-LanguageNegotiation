@@ -2,8 +2,12 @@ import Foundation
 import Kitura
 import LoggerAPI
 
+/// Handles langauge negotiation between a user-agent request and a Kitura
+/// Kitura server.
 public class LanguageNegotiation: RouterMiddleware {
 
+    /// Structures information on a match between requested languages and
+    /// languages a server supports.
     public struct NegMatch {
         public let lang: String
         public let method: NegMethod
@@ -16,6 +20,7 @@ public class LanguageNegotiation: RouterMiddleware {
         }
     }
 
+    /// Enumerates langauge negotiation methods.
     public enum NegMethod {
         // Matched on a subdomain (eg, en.example.com)
         case Subdomain
@@ -32,6 +37,7 @@ public class LanguageNegotiation: RouterMiddleware {
 //        case Unattempted
     }
 
+    /// Negotiation method configuration options.
     public struct Methods: OptionSet {
         public let rawValue: UInt8
         public init(rawValue: UInt8) {
@@ -47,6 +53,7 @@ public class LanguageNegotiation: RouterMiddleware {
         public static let header = Methods(rawValue: 1 << 2)
     }
 
+    /// Various other configuration methods.
     public struct Options: OptionSet {
         public let rawValue: UInt8
         public init(rawValue: UInt8) {
@@ -68,6 +75,7 @@ public class LanguageNegotiation: RouterMiddleware {
         public static let notAcceptableOnHeaderMatchFail = Options(rawValue: 1 << 3)
     }
 
+    /// Enumerates errors related to negotiation methods.
     enum NegMethodError: Error {
         // Initialized with an empty langs array. That's useless.
         case InitWithNoLangs
@@ -87,6 +95,19 @@ public class LanguageNegotiation: RouterMiddleware {
     lazy var acceptLanguagePattern: NSRegularExpression = self.computeAcceptLanguagePattern()
     public lazy var routerPaths: String = self.computeRouterPaths()
 
+    /// Inits Kitura Language Negotiation.
+    ///
+    /// - Parameter langs: An array of language codes; eg, `["en", "ja"]`. These
+    ///   codes should match those requested by an Accept-Language header and/or
+    ///   the subpaths or subdomains in use. If so configured, the first
+    ///   language code
+    /// - Parameter methods: A set of negotiation methods. Note that the
+    ///   `subdomain` and `pathPrefix` methods are mutually exclusive.
+    /// - Parameter options: A set of configuration options.
+    /// - Throws: NegMethodError
+    ///
+    /// - SeeAlso: `Options`
+    /// - SeeAlso: `Methods`
     public init(_ langs: [String], methods: Methods, options: Options = []) throws {
         guard langs.count > 0 else {
             throw NegMethodError.InitWithNoLangs
@@ -175,6 +196,11 @@ public class LanguageNegotiation: RouterMiddleware {
 
     }
 
+    /// Attempt to find a match between supported langauges and languages in the
+    /// `Accept-Language` request header, factoring in quality quantifiers.
+    ///
+    /// - Parameter acceptHeader: The `Accept-Header` request header value.
+    /// - Returns: A `NegMatch` if a match was made; otherwise nil.
     func attemptHeaderMatch(acceptHeader: String) -> NegMatch? {
         var currentBestMatch: NegMatch?
 
@@ -226,15 +252,19 @@ public class LanguageNegotiation: RouterMiddleware {
         return currentBestMatch
     }
 
+    /// Builds the regular expression for the `subdomainPattern` lazy parameter.
     func computeSubdomainPattern() -> NSRegularExpression {
         let langcodes = langs.joined(separator: "|")
         return try! NSRegularExpression(pattern: "^(" + langcodes + ")\\.", options: [])
     }
 
+    /// Builds the regular expression for the `acceptLanguagePattern` lazy
+    /// parameter.
     func computeAcceptLanguagePattern() -> NSRegularExpression {
         return try! NSRegularExpression(pattern: "([a-zA-Z-]+|\\*)(?:.+?([\\d\\.]+))?", options: [])
     }
 
+    /// Builds the string for the `routerPaths` lazy parameter.
     func computeRouterPaths() -> String {
         // For some reason (Kitura bug?) the unbalanced parentheses are correct
         // here.

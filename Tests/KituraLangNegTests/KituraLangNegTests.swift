@@ -5,6 +5,7 @@ import KituraNet
 import Dispatch
 @testable import KituraLangNeg
 
+/// Test cases for Kitura Language Negotiation.
 class KituraLangNegTests: XCTestCase {
 
     static var allTests = [
@@ -16,6 +17,7 @@ class KituraLangNegTests: XCTestCase {
         ("testDomainDetection", testDomainDetection)
     ]
 
+    /// Cases to test for proper handling of bad configuration.
     func testBadConfigs() {
         do {
             _ = try LanguageNegotiation([], methods: [.subdomain], options: [])
@@ -63,6 +65,7 @@ class KituraLangNegTests: XCTestCase {
         }
     }
 
+    /// Test cases involving the Accept-Language header.
     func testHeaderDetection() {
         let ln = try! LanguageNegotiation(["en", "ja"], methods: [.header])
         let r = setupRouter(langNeg: ln)
@@ -108,6 +111,8 @@ class KituraLangNegTests: XCTestCase {
 //        }
     }
 
+    /// Test cases involving subpaths (eg, `http://example.com/en/hello`, 
+    /// `http://example.com/ja/hello`, etc).
     func testPathDetection() {
         let ln = try! LanguageNegotiation(["en", "ja", "de"], methods: [.pathPrefix])
         let r = Router()
@@ -127,6 +132,7 @@ class KituraLangNegTests: XCTestCase {
         }
     }
 
+    /// Test cases involving non-default configuration options.
     func testOptions() {
         let ln = try! LanguageNegotiation(["en", "ja", "de"], methods: [.header, .pathPrefix], options: [.notAcceptableOnHeaderMatchFail])
         let r = Router()
@@ -165,6 +171,14 @@ class KituraLangNegTests: XCTestCase {
         }
     }
 
+    /// Test cases involving subdomain-based negotiation (eg,
+    /// `http://en.example.com`, `http://ja.example.com`, etc).
+    ///
+    /// - Important: Currently, you must add `en.localhost`, `de.localhost`, and
+    ///   `ja.localhost` to your hosts file, all pointing to `127.0.0.1`, in
+    ///   order for this test to run properly. If anyone has any suggestions on
+    ///   how to test this without this hosts file modification nonsense being
+    ///   necessary, please let me know!
     func testDomainDetection() {
         let ln = try! LanguageNegotiation(["en", "ja", "de"], methods: [.subdomain])
         let r = setupRouter(langNeg: ln)
@@ -181,6 +195,8 @@ class KituraLangNegTests: XCTestCase {
 
     }
 
+    /// A silly trick to build a NegMatch object out of HTTP headers in the
+    /// response.
     func buildNegMatch(response: ClientResponse) -> LanguageNegotiation.NegMatch? {
         guard let lang = response.headers["X-NM-Lang"], let quality = response.headers["X-NM-Quality"], let method = response.headers["X-NM-Method"] else {
             return nil
@@ -201,6 +217,8 @@ class KituraLangNegTests: XCTestCase {
         return LanguageNegotiation.NegMatch(lang: lang.first!, method: foundMethod!, quality: Float(quality.first!)!)
     }
 
+
+    /// Set up a Kitura router for running our tests.
     func setupRouter(langNeg: LanguageNegotiation? = nil) -> Router {
         let r = Router()
         if let langNeg = langNeg {
@@ -211,6 +229,9 @@ class KituraLangNegTests: XCTestCase {
                 next()
             }
             if let negMatch: LanguageNegotiation.NegMatch = request.userInfo["LangNeg"]! as? LanguageNegotiation.NegMatch {
+                // Put info about the NegMatch object in the response headers so
+                // we can build a NegMatch for observation later.
+                // - See: buildNegMatch()
                 response.headers["X-NM-Lang"] = negMatch.lang
                 response.headers["X-NM-Quality"] = String(negMatch.quality)
                 response.headers["X-NM-Method"] = String(negMatch.method.hashValue)
@@ -221,7 +242,9 @@ class KituraLangNegTests: XCTestCase {
     }
 
 
-    // Ripped off from the Kitura-CredentialsHTTP tests.
+    /// Set up a server to do tests against.
+    ///
+    /// Ripped off from the Kitura-CredentialsHTTP tests.
     func performServerTest(router: ServerDelegate, asyncTasks: @escaping (XCTestExpectation) -> Void...) {
         do {
             let server = try HTTPServer.listen(on: 8090, delegate: router)
@@ -244,6 +267,9 @@ class KituraLangNegTests: XCTestCase {
         }
     }
 
+    /// Perform a test request against the server.
+    ///
+    /// Ripped off Kitura-CredentialsHTTP tests.
     func performRequest(method: String, host: String = "localhost", path: String, callback: @escaping ClientRequest.Callback, headers: [String: String]? = nil, requestModifier: ((ClientRequest) -> Void)? = nil) {
         var allHeaders = [String: String]()
         if  let headers = headers  {
@@ -261,23 +287,32 @@ class KituraLangNegTests: XCTestCase {
         req.end()
     }
 
+    /// Build an expectation description.
+    ///
+    /// Ripped off Kitura-CredentialsHTTP tests.
     func expectation(_ index: Int) -> XCTestExpectation {
         let expectationDescription = "\(type(of: self))-\(index)"
         return self.expectation(description: expectationDescription)
     }
 
+    /// Frankly, I'm not ssure why this simple wrapper exists.
+    ///
+    /// Ripped off Kitura-CredentialsHTTP tests.
     func waitExpectation(timeout t: TimeInterval, handler: XCWaitCompletionHandler?) {
         self.waitForExpectations(timeout: t, handler: handler)
     }
 
+    /// Simplification wrapper for performRequest() for custom request headers.
     func perfReq(headers: [String: String]?, callback: @escaping ClientRequest.Callback) {
         performRequest(method: "get", host: "localhost", path: "/test", callback: callback, headers: headers, requestModifier: nil)
     }
 
+    /// Simplification wrapper for performRequest().
     func perfReq(path: String, callback: @escaping ClientRequest.Callback) {
         performRequest(method: "get", host: "localhost", path: path, callback: callback, headers: nil, requestModifier: nil)
     }
 
+    /// Simplification wrapper for performReuqest() for custom paths.
     func perfReq(host: String, path: String, callback: @escaping ClientRequest.Callback) {
         performRequest(method: "get", host: host, path: path, callback: callback, headers: nil, requestModifier: nil)
     }
