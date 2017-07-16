@@ -3,7 +3,7 @@ import Kitura
 import LoggerAPI
 
 /// Handles langauge negotiation between a user-agent request and a Kitura
-/// Kitura server.
+/// server.
 public class LanguageNegotiation: RouterMiddleware {
 
     /// Structures information on a match between requested languages and
