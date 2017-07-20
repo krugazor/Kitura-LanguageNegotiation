@@ -88,11 +88,25 @@ public class LanguageNegotiation: RouterMiddleware {
         case RedirectWhere
     }
 
+    /// The methods in use.
+    /// - SeeAlso: `Methods`
     let methods: Methods
+
+    /// The options in use.
+    /// - SeeAlso: `Options`
     let options: Options
+
+    /// An array of language codes the site supports.
     let langs: [String]
+
+    /// A regular expression that matches valid subdomains for the langcodes
+    /// in use.
     lazy var subdomainPattern: NSRegularExpression = self.computeSubdomainPattern()
+
+    /// A regular expression that matches Accept-Language header values.
     lazy var acceptLanguagePattern: NSRegularExpression = self.computeAcceptLanguagePattern()
+
+    /// Router paths for a "parent" router when path prefix method is used.
     public lazy var routerPaths: String = self.computeRouterPaths()
 
     /// Inits Kitura Language Negotiation.
