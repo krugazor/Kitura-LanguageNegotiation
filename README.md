@@ -12,7 +12,9 @@ You can also redirect the user to a URL using one of the other methods if only t
 
 ## Usage
 
-This example will use the subdomain and header language negotiation methods; the user will be redirected to a URL with the appropriate subdomian if only the header method is triggered. (Note that when testing subdomains, you need to have those subdomains set up elsewhere; adding them to your hosts file is probably the easiest way to do so locally.)
+Aside from the documentation below, please have a look at my [Kitura i18n Sample](https://github.com/NocturnalSolutions/Kitura-i18nSample) project which uses Kitura Language Negotiation along with [Kitura Translation](https://github.com/NocturnalSolutions/Kitura-Translation) to demonstrate a site with basic i18n (internationalization) features.
+
+The example below will use the subdomain and header language negotiation methods; the user will be redirected to a URL with the appropriate subdomian if only the header method is triggered. (Note that when testing subdomains, you need to have those subdomains set up elsewhere; adding them to your hosts file is probably the easiest way to do so locally.)
 
 ```swift
 import Kitura
