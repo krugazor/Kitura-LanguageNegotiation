@@ -157,8 +157,8 @@ public class LanguageNegotiation: RouterMiddleware {
             }
         }
         else if methods.contains(.subdomain) {
-            if let subMatch = subdomainPattern.firstMatch(in: request.domain, options: [], range: NSRange(location: 0, length: request.domain.utf16.count)) {
-                let sub = request.domain.substring(to: request.domain.index(request.domain.startIndex, offsetBy: subMatch.range(at: 1).length))
+            if let subMatch = subdomainPattern.firstMatch(in: request.hostname, options: [], range: NSRange(location: 0, length: request.hostname.utf16.count)) {
+                let sub = request.hostname.substring(to: request.hostname.index(request.hostname.startIndex, offsetBy: subMatch.range(at: 1).length))
                 match = NegMatch(lang: sub, method: .Subdomain)
 
             }
