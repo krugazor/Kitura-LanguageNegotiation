@@ -245,7 +245,7 @@ class KituraLangNegTests: XCTestCase {
     /// Set up a server to do tests against.
     ///
     /// Ripped off from the Kitura-CredentialsHTTP tests.
-    func performServerTest(router: ServerDelegate, asyncTasks: @escaping (XCTestExpectation) -> Void...) {
+    func performServerTest(router: ServerDelegate, asyncTasks: (XCTestExpectation) -> Void...) {
         do {
             let server = try HTTPServer.listen(on: 8090, delegate: router)
             let requestQueue = DispatchQueue(label: "Request queue")

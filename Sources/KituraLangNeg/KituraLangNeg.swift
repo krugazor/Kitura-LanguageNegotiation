@@ -158,7 +158,7 @@ public class LanguageNegotiation: RouterMiddleware {
         }
         else if methods.contains(.subdomain) {
             if let subMatch = subdomainPattern.firstMatch(in: request.domain, options: [], range: NSRange(location: 0, length: request.domain.utf16.count)) {
-                let sub = request.domain.substring(to: request.domain.index(request.domain.startIndex, offsetBy: subMatch.rangeAt(1).length))
+                let sub = request.domain.substring(to: request.domain.index(request.domain.startIndex, offsetBy: subMatch.range(at: 1).length))
                 match = NegMatch(lang: sub, method: .Subdomain)
 
             }
@@ -226,24 +226,24 @@ public class LanguageNegotiation: RouterMiddleware {
             }
 
             // Extract the langcode
-            let langcodeRange = alMatch.rangeAt(1)
-            let start = String.UTF16Index(langcodeRange.location)
-            let end = String.UTF16Index(langcodeRange.location + langcodeRange.length)
+            let langcodeRange = alMatch.range(at: 1)
+            let start = String.UTF16View.Index(encodedOffset: langcodeRange.location)
+            let end = String.UTF16View.Index(encodedOffset: langcodeRange.location + langcodeRange.length)
             var langcode = String(acceptable.utf16[start..<end])!
             if langcode == "*" {
                 langcode = langs.first!
             }
 
             let quality: Float?
-            let qualityRange = alMatch.rangeAt(2)
+            let qualityRange = alMatch.range(at: 2)
             if qualityRange.location == NSNotFound {
                 // If there's no quality specified, use 1.
                 quality = 1.0
             }
             else {
                 // Extract the quality.
-                let start = String.UTF16Index(qualityRange.location)
-                let end = String.UTF16Index(qualityRange.location + qualityRange.length)
+                let start = String.UTF16View.Index(encodedOffset: qualityRange.location)
+                let end = String.UTF16View.Index(encodedOffset: qualityRange.location + qualityRange.length)
                 quality = Float(String(acceptable.utf16[start..<end])!)
                 // "all languages which are assigned a quality factor greater
                 // than 0 are acceptable," so treat a best match with a quality
