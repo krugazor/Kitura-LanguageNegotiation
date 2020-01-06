@@ -5,6 +5,12 @@ import PackageDescription
 
 let package = Package(
     name: "KituraLangNeg",
+    products: [
+        .library(
+            name: "KituraLangNeg",
+            targets: ["KituraLangNeg"]
+        )
+    ],
     dependencies: [
         .package(url: "https://github.com/IBM-Swift/Kitura.git", from: "2.9.0"),
     ],
