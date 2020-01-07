@@ -1,7 +1,9 @@
 import Foundation
 
 // Workaround/hack for differing methods in macOS vs Linux.
+// Not needed anymore kept around for reference
 
+/*
 #if os(Linux)
     extension TextCheckingResult {
         /// Add the `rangeAt` method as a wrapper around the `range` method; the
@@ -12,3 +14,4 @@ import Foundation
     }
 #endif
 
+*/
